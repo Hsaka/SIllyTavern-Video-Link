@@ -7,8 +7,8 @@
 const MODULE_NAME = 'video_link';
 
 // Default settings
-const defaultSettings = Object.freeze({
-    enabled: true,
+let defaultSettings = Object.freeze({
+    enabled: true,    
     apiEndpoint: 'https://api.example.com/get-link',
     buttonText: '🔗',
     buttonPosition: 'bottom' // 'top' or 'bottom'
@@ -53,7 +53,7 @@ function saveSettings() {
  */
 async function fetchLinkFromAPI(messageText) {
     try {
-        const response = await fetch(settings.apiEndpoint, {
+        const response = await fetch(settings.apiEndpoint+'/v1/txt2vid', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ async function fetchLinkFromAPI(messageText) {
         
         // Assuming the API returns { url: "https://..." }
         // Adjust this based on your actual API response structure
-        return data.url || data.link || data;
+        return data.filename;
     } catch (error) {
         console.error('[Video Link] Error fetching link:', error);
         throw error;
@@ -244,46 +244,46 @@ async function handleButtonClick(event) {
     const originalText = button.textContent;
     button.textContent = '⏳';
     
-    // try {
-    //     // Remove existing link if present (for regeneration)
-    //     const existingLink = messageElement.querySelector('.message-link-container');
-    //     if (existingLink) {
-    //         existingLink.remove();
-    //     }
+    try {
+        // Remove existing link if present (for regeneration)
+        const existingLink = messageElement.querySelector('.message-link-container');
+        if (existingLink) {
+            existingLink.remove();
+        }
         
-    //     // Fetch URL from API
-    //     const url = await fetchLinkFromAPI(messageText);
+        // Fetch URL from API
+        const filename = await fetchLinkFromAPI(messageText);
         
-    //     // Add link to message
-    //     addLinkToMessage(messageElement, url);
-        
-    //     // Update button to show success
-    //     button.textContent = '✓';
-    //     button.classList.add('success');
-        
-    //     // Reset button after short delay
-    //     setTimeout(() => {
-    //         button.textContent = originalText;
-    //         button.classList.remove('success');
-    //         button.disabled = false;
-    //     }, 1500);
-        
-    // } catch (error) {
-    //     // Show error state
-    //     button.textContent = '✗';
-    //     button.classList.add('error');
-    //     button.disabled = false;
-        
-    //     // Reset button after delay
-    //     setTimeout(() => {
-    //         button.textContent = originalText;
-    //         button.classList.remove('error');
-    //     }, 2000);
-        
-    //     console.error('[Video Link] Failed to fetch link:', error);
-    // }
+        const url = `${apiEndpoint}/v1/player?id=${filename}`;
 
-    addLinkToMessage(messageElement, "https://gamepyong.xyz");
+        // Add link to message
+        addLinkToMessage(messageElement, url);
+        
+        // Update button to show success
+        button.textContent = '✓';
+        button.classList.add('success');
+        
+        // Reset button after short delay
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('success');
+            button.disabled = false;
+        }, 1500);
+        
+    } catch (error) {
+        // Show error state
+        button.textContent = '✗';
+        button.classList.add('error');
+        button.disabled = false;
+        
+        // Reset button after delay
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('error');
+        }, 2000);
+        
+        console.error('[Video Link] Failed to fetch link:', error);
+    }
 }
 
 /**
