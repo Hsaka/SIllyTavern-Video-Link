@@ -220,16 +220,16 @@ async function handleButtonClick(event) {
     const messageElement = button.closest('.mes');
     
     if (!messageElement) return;
+
+    // Clone the mesText to avoid modifying the DOM while reading
+    const mesTextClone = mesText.cloneNode(true);
     
-    // Get message text - extract only the text content, not HTML
-    const mesText = messageElement.querySelector('.mes_text');
-    if (!mesText) {
-        console.error('[Video Link] No message text found');
-        return;
-    }
+    // Remove any existing video link containers from the clone
+    const existingLinks = mesTextClone.querySelectorAll('.message-link-container');
+    existingLinks.forEach(link => link.remove());
     
-    // Get the actual text content, stripping out any HTML
-    let messageText = mesText.innerText || mesText.textContent || '';
+    // Get the actual text content, stripping out any HTML and the video link
+    let messageText = mesTextClone.innerText || mesTextClone.textContent || '';
     messageText = messageText.trim();
     
     if (!messageText) {
