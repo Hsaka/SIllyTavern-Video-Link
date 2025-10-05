@@ -1,7 +1,7 @@
-/* Message Link Button Extension Styles */
+/* Video Link Extension Styles */
 
 /* Button styling - uses SillyTavern's menu_button class */
-.message-link-button {
+.video-link-button {
     padding: 5px 10px;
     margin: 0 2px;
     font-size: 16px;
@@ -10,26 +10,26 @@
     transition: opacity 0.3s, transform 0.1s;
 }
 
-.message-link-button:hover:not(:disabled) {
+.video-link-button:hover:not(:disabled) {
     opacity: 1;
     transform: scale(1.1);
 }
 
-.message-link-button:disabled {
+.video-link-button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
 }
 
-.message-link-button:active:not(:disabled) {
+.video-link-button:active:not(:disabled) {
     transform: scale(0.95);
 }
 
-.message-link-button.success {
+.video-link-button.success {
     color: #4CAF50;
     opacity: 1;
 }
 
-.message-link-button.error {
+.video-link-button.error {
     color: #f44336;
     opacity: 1;
 }

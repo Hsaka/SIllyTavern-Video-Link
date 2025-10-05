@@ -1,10 +1,10 @@
 /**
- * Message Link Button Extension for SillyTavern
- * Adds a button to each message that calls an API and inserts a clickable link
+ * Video Link Extension for SillyTavern
+ * Adds a button to each message that calls an API and inserts a clickable video link
  */
 
 // Extension module name - must be unique
-const MODULE_NAME = 'message_link_button';
+const MODULE_NAME = 'video_link';
 
 // Default settings
 const defaultSettings = Object.freeze({
@@ -74,7 +74,7 @@ async function fetchLinkFromAPI(messageText) {
         // Adjust this based on your actual API response structure
         return data.url || data.link || data;
     } catch (error) {
-        console.error('[Message Link Button] Error fetching link:', error);
+        console.error('[Video Link] Error fetching link:', error);
         throw error;
     }
 }
@@ -150,7 +150,7 @@ async function handleButtonClick(event) {
             button.classList.remove('error');
         }, 2000);
         
-        console.error('[Message Link Button] Failed to fetch link:', error);
+        console.error('[Video Link] Failed to fetch link:', error);
     }
 }
 
@@ -212,34 +212,34 @@ function handleMessageRendered(event) {
  */
 function createSettingsUI() {
     const settingsHtml = `
-        <div class="message-link-button-settings">
+        <div class="video-link-settings">
             <div class="inline-drawer">
                 <div class="inline-drawer-toggle inline-drawer-header">
-                    <b>Message Link Button</b>
+                    <b>Video Link</b>
                     <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
                 </div>
                 <div class="inline-drawer-content">
                     <label class="checkbox_label">
-                        <input id="mlb_enabled" type="checkbox" ${settings.enabled ? 'checked' : ''} />
+                        <input id="vl_enabled" type="checkbox" ${settings.enabled ? 'checked' : ''} />
                         <span>Enable Extension</span>
                     </label>
                     
-                    <label for="mlb_api_endpoint">
+                    <label for="vl_api_endpoint">
                         <small>API Endpoint</small>
                     </label>
-                    <input id="mlb_api_endpoint" class="text_pole" type="text" value="${settings.apiEndpoint}" />
-                    <small>The API endpoint that returns a URL</small>
+                    <input id="vl_api_endpoint" class="text_pole" type="text" value="${settings.apiEndpoint}" />
+                    <small>The API endpoint that returns a video URL</small>
                     
-                    <label for="mlb_button_text">
+                    <label for="vl_button_text">
                         <small>Button Text</small>
                     </label>
-                    <input id="mlb_button_text" class="text_pole" type="text" value="${settings.buttonText}" maxlength="10" />
+                    <input id="vl_button_text" class="text_pole" type="text" value="${settings.buttonText}" maxlength="10" />
                     <small>Text or emoji to display on the button</small>
                     
-                    <label for="mlb_button_position">
+                    <label for="vl_button_position">
                         <small>Button Position</small>
                     </label>
-                    <select id="mlb_button_position" class="text_pole">
+                    <select id="vl_button_position" class="text_pole">
                         <option value="left" ${settings.buttonPosition === 'left' ? 'selected' : ''}>Left</option>
                         <option value="right" ${settings.buttonPosition === 'right' ? 'selected' : ''}>Right</option>
                     </select>
@@ -250,41 +250,48 @@ function createSettingsUI() {
     
     $('#extensions_settings2').append(settingsHtml);
     
-    // Make the drawer collapsible
-    $('.message-link-button-settings .inline-drawer-toggle').on('click', function() {
-        const icon = $(this).find('.inline-drawer-icon');
-        const content = $(this).closest('.inline-drawer').find('.inline-drawer-content');
+    // Make the drawer collapsible - use event delegation or direct binding after DOM is ready
+    $(document).on('click', '.video-link-settings .inline-drawer-toggle', function() {
+        const drawer = $(this).closest('.inline-drawer');
+        const icon = drawer.find('.inline-drawer-icon');
+        const content = drawer.find('.inline-drawer-content');
         
-        content.slideToggle(200);
-        icon.toggleClass('down up');
-        icon.toggleClass('fa-circle-chevron-down fa-circle-chevron-up');
+        const isOpen = content.is(':visible');
+        
+        if (isOpen) {
+            content.slideUp(200);
+            icon.removeClass('up fa-circle-chevron-up').addClass('down fa-circle-chevron-down');
+        } else {
+            content.slideDown(200);
+            icon.removeClass('down fa-circle-chevron-down').addClass('up fa-circle-chevron-up');
+        }
     });
     
     // Add event listeners for settings
-    $('#mlb_enabled').on('change', function() {
+    $('#vl_enabled').on('change', function() {
         settings.enabled = $(this).is(':checked');
         saveSettings();
         if (settings.enabled) {
             addButtonsToAllMessages();
         } else {
             // Remove all buttons when disabled
-            $('.message-link-button').remove();
+            $('.video-link-button').remove();
         }
     });
     
-    $('#mlb_api_endpoint').on('input', function() {
+    $('#vl_api_endpoint').on('input', function() {
         settings.apiEndpoint = $(this).val();
         saveSettings();
     });
     
-    $('#mlb_button_text').on('input', function() {
+    $('#vl_button_text').on('input', function() {
         settings.buttonText = $(this).val();
         saveSettings();
         // Update existing buttons
-        $('.message-link-button').text(settings.buttonText);
+        $('.video-link-button').text(settings.buttonText);
     });
     
-    $('#mlb_button_position').on('change', function() {
+    $('#vl_button_position').on('change', function() {
         settings.buttonPosition = $(this).val();
         saveSettings();
     });
@@ -299,7 +306,7 @@ async function init() {
     // Load settings
     loadSettings();
     
-    console.log('[Message Link Button] Extension initialized');
+    console.log('[Video Link] Extension initialized');
     
     // Listen for messages being rendered
     eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, handleMessageRendered);
