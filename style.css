@@ -1,0 +1,105 @@
+/* Message Link Button Extension Styles */
+
+.message-link-button {
+    padding: 4px 8px;
+    margin: 0 2px;
+    background-color: var(--SmartThemeBodyColor, #2b2b2b);
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    color: var(--SmartThemeQuoteColor, #bbb);
+}
+
+.message-link-button:hover:not(:disabled) {
+    background-color: var(--SmartThemeBlurTintColor, #3a3a3a);
+    border-color: var(--SmartThemeHighlightColor, #777);
+    transform: scale(1.05);
+}
+
+.message-link-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.message-link-button:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+/* Link container styling */
+.message-link-container {
+    padding: 8px;
+    margin-top: 8px;
+    background-color: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.2));
+    border-left: 3px solid var(--SmartThemeHighlightColor, #4a9eff);
+    border-radius: 4px;
+}
+
+.message-generated-link {
+    color: var(--SmartThemeHighlightColor, #4a9eff);
+    text-decoration: none;
+    font-weight: 500;
+    word-break: break-all;
+}
+
+.message-generated-link:hover {
+    text-decoration: underline;
+    color: var(--SmartThemeQuoteColor, #6bb6ff);
+}
+
+/* Settings UI Styles */
+.message-link-button-settings {
+    padding: 15px;
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.1));
+}
+
+.message-link-button-settings h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--SmartThemeQuoteColor, #ddd);
+    border-bottom: 1px solid var(--SmartThemeBorderColor, #555);
+    padding-bottom: 8px;
+}
+
+.message-link-button-settings .settings-row {
+    margin-bottom: 15px;
+}
+
+.message-link-button-settings label {
+    display: block;
+    margin-bottom: 5px;
+    color: var(--SmartThemeQuoteColor, #bbb);
+    font-weight: 500;
+}
+
+.message-link-button-settings label input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+.message-link-button-settings input[type="text"],
+.message-link-button-settings select {
+    width: 100%;
+    padding: 8px;
+    background-color: var(--SmartThemeBodyColor, #2b2b2b);
+    border: 1px solid var(--SmartThemeBorderColor, #555);
+    border-radius: 4px;
+    color: var(--SmartThemeQuoteColor, #ddd);
+    font-size: 14px;
+}
+
+.message-link-button-settings input[type="text"]:focus,
+.message-link-button-settings select:focus {
+    outline: none;
+    border-color: var(--SmartThemeHighlightColor, #4a9eff);
+}
+
+.message-link-button-settings small {
+    display: block;
+    margin-top: 4px;
+    color: var(--SmartThemeQuoteColor, #888);
+    font-size: 12px;
+}
