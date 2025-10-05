@@ -221,6 +221,13 @@ async function handleButtonClick(event) {
     
     if (!messageElement) return;
 
+    // Get message text - extract only the text content, not HTML
+    const mesText = messageElement.querySelector('.mes_text');
+    if (!mesText) {
+        console.error('[Video Link] No message text found');
+        return;
+    }
+
     // Clone the mesText to avoid modifying the DOM while reading
     const mesTextClone = mesText.cloneNode(true);
     
