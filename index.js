@@ -171,16 +171,26 @@ function addButtonToMessage(messageElement) {
     button.title = 'Get Video Link';
     button.addEventListener('click', handleButtonClick);
     
-    // Find the message buttons container
-    const mesButtons = messageElement.querySelector('.mes_buttons');
+    // Find the extraMesButtons container (the overflow menu)
+    let extraButtons = messageElement.querySelector('.extraMesButtons');
     
-    if (mesButtons) {
-        // Add to existing buttons container
-        if (settings.buttonPosition === 'left') {
-            mesButtons.insertBefore(button, mesButtons.firstChild);
-        } else {
-            mesButtons.appendChild(button);
+    if (!extraButtons) {
+        // Create extraMesButtons container if it doesn't exist
+        extraButtons = document.createElement('div');
+        extraButtons.className = 'extraMesButtons';
+        extraButtons.style.display = 'none';
+        
+        const mesButtons = messageElement.querySelector('.mes_buttons');
+        if (mesButtons) {
+            mesButtons.appendChild(extraButtons);
         }
+    }
+    
+    // Add button to the extra buttons menu
+    if (settings.buttonPosition === 'left') {
+        extraButtons.insertBefore(button, extraButtons.firstChild);
+    } else {
+        extraButtons.appendChild(button);
     }
 }
 
