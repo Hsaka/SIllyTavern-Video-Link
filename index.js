@@ -198,12 +198,6 @@ function loadSavedVideoLinks() {
                         // Add the link without saving (it's already saved)
                         addLinkToMessage(messageElement, message.extra.video_link, false);
                         loadedCount++;
-                        
-                        // Hide the button since link already exists
-                        const button = messageElement.querySelector('.video-link-button');
-                        if (button) {
-                            button.style.display = 'none';
-                        }
                     }
                 } else {
                     console.log('[Video Link] DOM element not found for message', index);
@@ -251,6 +245,12 @@ async function handleButtonClick(event) {
     button.textContent = '⏳';
     
     // try {
+    //     // Remove existing link if present (for regeneration)
+    //     const existingLink = messageElement.querySelector('.message-link-container');
+    //     if (existingLink) {
+    //         existingLink.remove();
+    //     }
+        
     //     // Fetch URL from API
     //     const url = await fetchLinkFromAPI(messageText);
         
@@ -261,10 +261,12 @@ async function handleButtonClick(event) {
     //     button.textContent = '✓';
     //     button.classList.add('success');
         
-    //     // Optional: hide button after success
+    //     // Reset button after short delay
     //     setTimeout(() => {
-    //         button.style.display = 'none';
-    //     }, 1000);
+    //         button.textContent = originalText;
+    //         button.classList.remove('success');
+    //         button.disabled = false;
+    //     }, 1500);
         
     // } catch (error) {
     //     // Show error state
@@ -292,22 +294,6 @@ function addButtonToMessage(messageElement) {
     // Don't add if button already exists
     if (messageElement.querySelector('.video-link-button')) {
         return;
-    }
-    
-    // Check if this message already has a saved video link
-    const mesId = messageElement.getAttribute('mesid');
-    if (mesId !== null) {
-        const { chat } = SillyTavern.getContext();
-        const messageIndex = parseInt(mesId);
-        
-        if (!isNaN(messageIndex) && messageIndex >= 0 && messageIndex < chat.length) {
-            const message = chat[messageIndex];
-            
-            // If link exists, don't show the button
-            if (message.extra && message.extra.video_link) {
-                return;
-            }
-        }
     }
     
     // Create button container that will appear below the message text
