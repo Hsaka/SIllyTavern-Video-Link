@@ -10,7 +10,7 @@ const MODULE_NAME = 'video_link';
 let defaultSettings = Object.freeze({
     enabled: true,    
     apiEndpoint: 'https://api.example.com/get-link',
-    buttonText: '🔗',
+    buttonText: '🎬',
     buttonPosition: 'bottom' // 'top' or 'bottom'
 });
 
