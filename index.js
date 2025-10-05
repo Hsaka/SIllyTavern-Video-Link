@@ -10,8 +10,7 @@ const MODULE_NAME = 'video_link';
 const defaultSettings = Object.freeze({
     enabled: true,
     apiEndpoint: 'https://api.example.com/get-link',
-    buttonText: '🔗',
-    buttonPosition: 'bottom' // 'top' or 'bottom'
+    buttonText: '🔗'
 });
 
 // Extension state
@@ -164,10 +163,6 @@ function addButtonToMessage(messageElement) {
         return;
     }
     
-    // Create button container that will appear below the message text
-    const buttonContainer = document.createElement('div');
-    buttonContainer.className = 'video-link-button-container';
-    
     // Create button
     const button = document.createElement('button');
     button.className = 'video-link-button menu_button';
@@ -175,17 +170,20 @@ function addButtonToMessage(messageElement) {
     button.title = 'Get Video Link';
     button.addEventListener('click', handleButtonClick);
     
-    buttonContainer.appendChild(button);
+    // Find the mes_buttons container
+    const mesButtons = messageElement.querySelector('.mes_buttons');
     
-    // Find the message text container and add button relative to it
-    const mesText = messageElement.querySelector('.mes_text');
-    
-    if (mesText) {
-        // Insert before or after the message text based on settings
-        if (settings.buttonPosition === 'top') {
-            mesText.parentNode.insertBefore(buttonContainer, mesText);
+    if (mesButtons) {
+        // Find the "..." extra options button (has class extraMesButtonsHint or mes_extraMenu)
+        const extraMenuButton = mesButtons.querySelector('.extraMesButtonsHint, .mes_extraMenu');
+        
+        if (extraMenuButton) {
+            // Insert our button just before the extra menu button
+            // This ensures it's visible but won't push other important buttons out
+            mesButtons.insertBefore(button, extraMenuButton);
         } else {
-            mesText.parentNode.insertBefore(buttonContainer, mesText.nextSibling);
+            // Fallback: add at the end if no extra menu found
+            mesButtons.appendChild(button);
         }
     }
 }
@@ -241,14 +239,6 @@ function createSettingsUI() {
                     </label>
                     <input id="vl_button_text" class="text_pole" type="text" value="${settings.buttonText}" maxlength="10" />
                     <small>Text or emoji to display on the button</small>
-                    
-                    <label for="vl_button_position">
-                        <small>Button Position</small>
-                    </label>
-                    <select id="vl_button_position" class="text_pole">
-                        <option value="top" ${settings.buttonPosition === 'top' ? 'selected' : ''}>Above message</option>
-                        <option value="bottom" ${settings.buttonPosition === 'bottom' ? 'selected' : ''}>Below message</option>
-                    </select>
                 </div>
             </div>
         </div>
