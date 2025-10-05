@@ -11,7 +11,7 @@ const defaultSettings = Object.freeze({
     enabled: true,
     apiEndpoint: 'https://api.example.com/get-link',
     buttonText: '🔗',
-    buttonPosition: 'right' // 'left' or 'right'
+    buttonPosition: 'bottom' // 'top' or 'bottom'
 });
 
 // Extension state
@@ -164,6 +164,10 @@ function addButtonToMessage(messageElement) {
         return;
     }
     
+    // Create button container that will appear below the message text
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'video-link-button-container';
+    
     // Create button
     const button = document.createElement('button');
     button.className = 'video-link-button menu_button';
@@ -171,26 +175,18 @@ function addButtonToMessage(messageElement) {
     button.title = 'Get Video Link';
     button.addEventListener('click', handleButtonClick);
     
-    // Find the extraMesButtons container (the overflow menu)
-    let extraButtons = messageElement.querySelector('.extraMesButtons');
+    buttonContainer.appendChild(button);
     
-    if (!extraButtons) {
-        // Create extraMesButtons container if it doesn't exist
-        extraButtons = document.createElement('div');
-        extraButtons.className = 'extraMesButtons';
-        extraButtons.style.display = 'none';
-        
-        const mesButtons = messageElement.querySelector('.mes_buttons');
-        if (mesButtons) {
-            mesButtons.appendChild(extraButtons);
+    // Find the message text container and add button relative to it
+    const mesText = messageElement.querySelector('.mes_text');
+    
+    if (mesText) {
+        // Insert before or after the message text based on settings
+        if (settings.buttonPosition === 'top') {
+            mesText.parentNode.insertBefore(buttonContainer, mesText);
+        } else {
+            mesText.parentNode.insertBefore(buttonContainer, mesText.nextSibling);
         }
-    }
-    
-    // Add button to the extra buttons menu
-    if (settings.buttonPosition === 'left') {
-        extraButtons.insertBefore(button, extraButtons.firstChild);
-    } else {
-        extraButtons.appendChild(button);
     }
 }
 
@@ -250,8 +246,8 @@ function createSettingsUI() {
                         <small>Button Position</small>
                     </label>
                     <select id="vl_button_position" class="text_pole">
-                        <option value="left" ${settings.buttonPosition === 'left' ? 'selected' : ''}>Left</option>
-                        <option value="right" ${settings.buttonPosition === 'right' ? 'selected' : ''}>Right</option>
+                        <option value="top" ${settings.buttonPosition === 'top' ? 'selected' : ''}>Above message</option>
+                        <option value="bottom" ${settings.buttonPosition === 'bottom' ? 'selected' : ''}>Below message</option>
                     </select>
                 </div>
             </div>
