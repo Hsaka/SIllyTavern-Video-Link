@@ -174,13 +174,24 @@ function addButtonToMessage(messageElement) {
     const mesButtons = messageElement.querySelector('.mes_buttons');
     
     if (mesButtons) {
-        // Make mes_buttons horizontally scrollable if not already
-        if (!mesButtons.classList.contains('scrollable-buttons')) {
-            mesButtons.classList.add('scrollable-buttons');
-        }
+        // Make mes_buttons horizontally scrollable
+        mesButtons.classList.add('scrollable-buttons');
+        
+        // Also add class to parent for CSS targeting
+        messageElement.classList.add('scrollable-buttons-container');
+        
+        // Log for debugging
+        console.log('[Video Link] Adding button to message, buttons container width:', mesButtons.offsetWidth);
         
         // Add button at the end
         mesButtons.appendChild(button);
+        
+        // Force a reflow to ensure scrolling is calculated
+        setTimeout(() => {
+            const scrollWidth = mesButtons.scrollWidth;
+            const clientWidth = mesButtons.clientWidth;
+            console.log('[Video Link] Scroll width:', scrollWidth, 'Client width:', clientWidth, 'Scrollable:', scrollWidth > clientWidth);
+        }, 100);
     }
 }
 

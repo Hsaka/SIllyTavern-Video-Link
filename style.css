@@ -2,36 +2,42 @@
 
 /* Make message buttons scrollable horizontally */
 .mes_buttons.scrollable-buttons {
-    overflow-x: auto;
-    overflow-y: hidden;
-    white-space: nowrap;
-    display: flex;
-    flex-wrap: nowrap;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    white-space: nowrap !important;
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    max-width: 100% !important;
     scrollbar-width: thin; /* Firefox */
     scrollbar-color: var(--SmartThemeBlurTintColor) transparent; /* Firefox */
 }
 
 /* Webkit scrollbar styling */
 .mes_buttons.scrollable-buttons::-webkit-scrollbar {
-    height: 4px;
+    height: 6px !important;
 }
 
 .mes_buttons.scrollable-buttons::-webkit-scrollbar-track {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.05) !important;
 }
 
 .mes_buttons.scrollable-buttons::-webkit-scrollbar-thumb {
-    background: var(--SmartThemeBlurTintColor);
-    border-radius: 2px;
+    background: var(--SmartThemeBlurTintColor) !important;
+    border-radius: 3px !important;
 }
 
 .mes_buttons.scrollable-buttons::-webkit-scrollbar-thumb:hover {
-    background: var(--SmartThemeBorderColor);
+    background: var(--SmartThemeBorderColor) !important;
 }
 
 /* Ensure buttons don't wrap or shrink */
 .mes_buttons.scrollable-buttons > * {
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
+}
+
+/* Force parent containers to not restrict width */
+.mes.scrollable-buttons-container .mes_buttons {
+    max-width: none !important;
 }
 
 /* Button styling - compact size to fit in header */
@@ -42,7 +48,8 @@
     line-height: 1;
     opacity: 0.7;
     transition: opacity 0.2s, transform 0.1s;
-    flex-shrink: 0;
+    flex-shrink: 0 !important;
+    min-width: fit-content !important;
 }
 
 .video-link-button:hover:not(:disabled) {
