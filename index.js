@@ -174,17 +174,13 @@ function addButtonToMessage(messageElement) {
     const mesButtons = messageElement.querySelector('.mes_buttons');
     
     if (mesButtons) {
-        // Find the "..." extra options button (has class extraMesButtonsHint or mes_extraMenu)
-        const extraMenuButton = mesButtons.querySelector('.extraMesButtonsHint, .mes_extraMenu');
-        
-        if (extraMenuButton) {
-            // Insert our button just before the extra menu button
-            // This ensures it's visible but won't push other important buttons out
-            mesButtons.insertBefore(button, extraMenuButton);
-        } else {
-            // Fallback: add at the end if no extra menu found
-            mesButtons.appendChild(button);
+        // Make mes_buttons horizontally scrollable if not already
+        if (!mesButtons.classList.contains('scrollable-buttons')) {
+            mesButtons.classList.add('scrollable-buttons');
         }
+        
+        // Add button at the end
+        mesButtons.appendChild(button);
     }
 }
 

@@ -1,18 +1,53 @@
 /* Video Link Extension Styles */
 
-/* Button styling - uses SillyTavern's menu_button class */
+/* Make message buttons scrollable horizontally */
+.mes_buttons.scrollable-buttons {
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    display: flex;
+    flex-wrap: nowrap;
+    scrollbar-width: thin; /* Firefox */
+    scrollbar-color: var(--SmartThemeBlurTintColor) transparent; /* Firefox */
+}
+
+/* Webkit scrollbar styling */
+.mes_buttons.scrollable-buttons::-webkit-scrollbar {
+    height: 4px;
+}
+
+.mes_buttons.scrollable-buttons::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.mes_buttons.scrollable-buttons::-webkit-scrollbar-thumb {
+    background: var(--SmartThemeBlurTintColor);
+    border-radius: 2px;
+}
+
+.mes_buttons.scrollable-buttons::-webkit-scrollbar-thumb:hover {
+    background: var(--SmartThemeBorderColor);
+}
+
+/* Ensure buttons don't wrap or shrink */
+.mes_buttons.scrollable-buttons > * {
+    flex-shrink: 0;
+}
+
+/* Button styling - compact size to fit in header */
 .video-link-button {
-    padding: 5px 10px;
-    margin: 0 2px;
-    font-size: 16px;
+    padding: 4px 8px;
+    margin: 0 1px;
+    font-size: 14px;
     line-height: 1;
     opacity: 0.7;
-    transition: opacity 0.3s, transform 0.1s;
+    transition: opacity 0.2s, transform 0.1s;
+    flex-shrink: 0;
 }
 
 .video-link-button:hover:not(:disabled) {
     opacity: 1;
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 
 .video-link-button:disabled {
