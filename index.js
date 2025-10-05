@@ -10,7 +10,8 @@ const MODULE_NAME = 'video_link';
 const defaultSettings = Object.freeze({
     enabled: true,
     apiEndpoint: 'https://api.example.com/get-link',
-    buttonText: '🔗'
+    buttonText: '🔗',
+    buttonPosition: 'right' // 'left' or 'right'
 });
 
 // Extension state
@@ -163,6 +164,10 @@ function addButtonToMessage(messageElement) {
         return;
     }
     
+    // Create button container that will appear below the message text
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'video-link-button-container';
+    
     // Create button
     const button = document.createElement('button');
     button.className = 'video-link-button menu_button';
@@ -170,28 +175,14 @@ function addButtonToMessage(messageElement) {
     button.title = 'Get Video Link';
     button.addEventListener('click', handleButtonClick);
     
-    // Find the mes_buttons container
-    const mesButtons = messageElement.querySelector('.mes_buttons');
+    buttonContainer.appendChild(button);
     
-    if (mesButtons) {
-        // Make mes_buttons horizontally scrollable
-        mesButtons.classList.add('scrollable-buttons');
-        
-        // Also add class to parent for CSS targeting
-        messageElement.classList.add('scrollable-buttons-container');
-        
-        // Log for debugging
-        console.log('[Video Link] Adding button to message, buttons container width:', mesButtons.offsetWidth);
-        
-        // Add button at the end
-        mesButtons.appendChild(button);
-        
-        // Force a reflow to ensure scrolling is calculated
-        setTimeout(() => {
-            const scrollWidth = mesButtons.scrollWidth;
-            const clientWidth = mesButtons.clientWidth;
-            console.log('[Video Link] Scroll width:', scrollWidth, 'Client width:', clientWidth, 'Scrollable:', scrollWidth > clientWidth);
-        }, 100);
+    // Find the message text container and add button below it
+    const mesText = messageElement.querySelector('.mes_text');
+    
+    if (mesText) {
+        // Insert after the message text
+        mesText.parentNode.insertBefore(buttonContainer, mesText.nextSibling);
     }
 }
 
@@ -246,6 +237,14 @@ function createSettingsUI() {
                     </label>
                     <input id="vl_button_text" class="text_pole" type="text" value="${settings.buttonText}" maxlength="10" />
                     <small>Text or emoji to display on the button</small>
+                    
+                    <label for="vl_button_position">
+                        <small>Button Position</small>
+                    </label>
+                    <select id="vl_button_position" class="text_pole">
+                        <option value="left" ${settings.buttonPosition === 'left' ? 'selected' : ''}>Left</option>
+                        <option value="right" ${settings.buttonPosition === 'right' ? 'selected' : ''}>Right</option>
+                    </select>
                 </div>
             </div>
         </div>

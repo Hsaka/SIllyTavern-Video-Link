@@ -1,60 +1,18 @@
 /* Video Link Extension Styles */
 
-/* Make message buttons scrollable horizontally */
-.mes_buttons.scrollable-buttons {
-    overflow-x: auto !important;
-    overflow-y: hidden !important;
-    white-space: nowrap !important;
-    display: flex !important;
-    flex-wrap: nowrap !important;
-    max-width: 100% !important;
-    scrollbar-width: thin; /* Firefox */
-    scrollbar-color: var(--SmartThemeBlurTintColor) transparent; /* Firefox */
-}
-
-/* Webkit scrollbar styling */
-.mes_buttons.scrollable-buttons::-webkit-scrollbar {
-    height: 6px !important;
-}
-
-.mes_buttons.scrollable-buttons::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05) !important;
-}
-
-.mes_buttons.scrollable-buttons::-webkit-scrollbar-thumb {
-    background: var(--SmartThemeBlurTintColor) !important;
-    border-radius: 3px !important;
-}
-
-.mes_buttons.scrollable-buttons::-webkit-scrollbar-thumb:hover {
-    background: var(--SmartThemeBorderColor) !important;
-}
-
-/* Ensure buttons don't wrap or shrink */
-.mes_buttons.scrollable-buttons > * {
-    flex-shrink: 0 !important;
-}
-
-/* Force parent containers to not restrict width */
-.mes.scrollable-buttons-container .mes_buttons {
-    max-width: none !important;
-}
-
-/* Button styling - compact size to fit in header */
+/* Button styling - uses SillyTavern's menu_button class */
 .video-link-button {
-    padding: 4px 8px;
-    margin: 0 1px;
-    font-size: 14px;
+    padding: 5px 10px;
+    margin: 0 2px;
+    font-size: 16px;
     line-height: 1;
     opacity: 0.7;
-    transition: opacity 0.2s, transform 0.1s;
-    flex-shrink: 0 !important;
-    min-width: fit-content !important;
+    transition: opacity 0.3s, transform 0.1s;
 }
 
 .video-link-button:hover:not(:disabled) {
     opacity: 1;
-    transform: scale(1.05);
+    transform: scale(1.1);
 }
 
 .video-link-button:disabled {
