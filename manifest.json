@@ -1,11 +1,11 @@
 {
-  "display_name": "Message Link Button",
+  "display_name": "Video Link",
   "loading_order": 1,
   "js": "index.js",
   "css": "style.css",
-  "author": "Your Name",
+  "author": "Hsaka",
   "version": "1.0.0",
-  "homePage": "https://github.com/your-username/message-link-button",
+  "homePage": "https://github.com/Hsaka/SIllyTavern-Video-Link",
   "auto_update": false,
   "minimum_client_version": "1.0.0"
 }

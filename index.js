@@ -4,7 +4,7 @@
  */
 
 // Extension module name - must be unique
-const MODULE_NAME = 'message_link_button';
+const MODULE_NAME = '_hsakavideo_link';
 
 // Default settings
 const defaultSettings = Object.freeze({
