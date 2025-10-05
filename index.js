@@ -4,7 +4,7 @@
  */
 
 // Extension module name - must be unique
-const MODULE_NAME = '_hsakavideo_link';
+const MODULE_NAME = 'message_link_button';
 
 // Default settings
 const defaultSettings = Object.freeze({
@@ -92,7 +92,6 @@ function addLinkToMessage(messageElement, url) {
     // Create link element
     const linkContainer = document.createElement('div');
     linkContainer.className = 'message-link-container';
-    linkContainer.style.marginTop = '8px';
     
     const link = document.createElement('a');
     link.href = url;
@@ -132,7 +131,7 @@ async function handleButtonClick(event) {
         
         // Update button to show success
         button.textContent = '✓';
-        button.style.color = '#4CAF50';
+        button.classList.add('success');
         
         // Optional: hide button after success
         setTimeout(() => {
@@ -142,13 +141,13 @@ async function handleButtonClick(event) {
     } catch (error) {
         // Show error state
         button.textContent = '✗';
-        button.style.color = '#f44336';
+        button.classList.add('error');
         button.disabled = false;
         
         // Reset button after delay
         setTimeout(() => {
             button.textContent = settings.buttonText;
-            button.style.color = '';
+            button.classList.remove('error');
         }, 2000);
         
         console.error('[Message Link Button] Failed to fetch link:', error);
@@ -201,81 +200,94 @@ function addButtonsToAllMessages() {
 function handleMessageRendered(event) {
     if (!settings.enabled) return;
     
-    // Get the message element from the event data
-    const messageId = event.detail?.messageId;
-    if (!messageId) return;
-    
-    const messageElement = document.querySelector(`#chat .mes[mesid="${messageId}"]`);
-    if (messageElement) {
-        addButtonToMessage(messageElement);
-    }
+    // Small delay to ensure message is fully rendered
+    setTimeout(() => {
+        const messages = document.querySelectorAll('#chat .mes');
+        messages.forEach(addButtonToMessage);
+    }, 100);
 }
 
 /**
- * Create settings UI
+ * Create settings UI using SillyTavern's standard pattern
  */
 function createSettingsUI() {
-    const html = `
+    const settingsHtml = `
         <div class="message-link-button-settings">
-            <h3>Message Link Button Settings</h3>
-            
-            <div class="settings-row">
-                <label for="mlb_enabled">
-                    <input type="checkbox" id="mlb_enabled" ${settings.enabled ? 'checked' : ''} />
-                    Enable Extension
-                </label>
-            </div>
-            
-            <div class="settings-row">
-                <label for="mlb_api_endpoint">API Endpoint:</label>
-                <input type="text" id="mlb_api_endpoint" class="text_pole" value="${settings.apiEndpoint}" />
-                <small>The API endpoint that returns a URL</small>
-            </div>
-            
-            <div class="settings-row">
-                <label for="mlb_button_text">Button Text:</label>
-                <input type="text" id="mlb_button_text" class="text_pole" value="${settings.buttonText}" />
-                <small>Text or emoji to display on the button</small>
-            </div>
-            
-            <div class="settings-row">
-                <label for="mlb_button_position">Button Position:</label>
-                <select id="mlb_button_position" class="text_pole">
-                    <option value="left" ${settings.buttonPosition === 'left' ? 'selected' : ''}>Left</option>
-                    <option value="right" ${settings.buttonPosition === 'right' ? 'selected' : ''}>Right</option>
-                </select>
+            <div class="inline-drawer">
+                <div class="inline-drawer-toggle inline-drawer-header">
+                    <b>Message Link Button</b>
+                    <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+                </div>
+                <div class="inline-drawer-content">
+                    <label class="checkbox_label">
+                        <input id="mlb_enabled" type="checkbox" ${settings.enabled ? 'checked' : ''} />
+                        <span>Enable Extension</span>
+                    </label>
+                    
+                    <label for="mlb_api_endpoint">
+                        <small>API Endpoint</small>
+                    </label>
+                    <input id="mlb_api_endpoint" class="text_pole" type="text" value="${settings.apiEndpoint}" />
+                    <small>The API endpoint that returns a URL</small>
+                    
+                    <label for="mlb_button_text">
+                        <small>Button Text</small>
+                    </label>
+                    <input id="mlb_button_text" class="text_pole" type="text" value="${settings.buttonText}" maxlength="10" />
+                    <small>Text or emoji to display on the button</small>
+                    
+                    <label for="mlb_button_position">
+                        <small>Button Position</small>
+                    </label>
+                    <select id="mlb_button_position" class="text_pole">
+                        <option value="left" ${settings.buttonPosition === 'left' ? 'selected' : ''}>Left</option>
+                        <option value="right" ${settings.buttonPosition === 'right' ? 'selected' : ''}>Right</option>
+                    </select>
+                </div>
             </div>
         </div>
     `;
     
-    const settingsContainer = document.createElement('div');
-    settingsContainer.innerHTML = html;
+    $('#extensions_settings2').append(settingsHtml);
+    
+    // Make the drawer collapsible
+    $('.message-link-button-settings .inline-drawer-toggle').on('click', function() {
+        const icon = $(this).find('.inline-drawer-icon');
+        const content = $(this).closest('.inline-drawer').find('.inline-drawer-content');
+        
+        content.slideToggle(200);
+        icon.toggleClass('down up');
+        icon.toggleClass('fa-circle-chevron-down fa-circle-chevron-up');
+    });
     
     // Add event listeners for settings
-    settingsContainer.querySelector('#mlb_enabled').addEventListener('change', (e) => {
-        settings.enabled = e.target.checked;
+    $('#mlb_enabled').on('change', function() {
+        settings.enabled = $(this).is(':checked');
         saveSettings();
         if (settings.enabled) {
             addButtonsToAllMessages();
+        } else {
+            // Remove all buttons when disabled
+            $('.message-link-button').remove();
         }
     });
     
-    settingsContainer.querySelector('#mlb_api_endpoint').addEventListener('input', (e) => {
-        settings.apiEndpoint = e.target.value;
+    $('#mlb_api_endpoint').on('input', function() {
+        settings.apiEndpoint = $(this).val();
         saveSettings();
     });
     
-    settingsContainer.querySelector('#mlb_button_text').addEventListener('input', (e) => {
-        settings.buttonText = e.target.value;
+    $('#mlb_button_text').on('input', function() {
+        settings.buttonText = $(this).val();
         saveSettings();
+        // Update existing buttons
+        $('.message-link-button').text(settings.buttonText);
     });
     
-    settingsContainer.querySelector('#mlb_button_position').addEventListener('change', (e) => {
-        settings.buttonPosition = e.target.value;
+    $('#mlb_button_position').on('change', function() {
+        settings.buttonPosition = $(this).val();
         saveSettings();
     });
-    
-    return settingsContainer.firstElementChild;
 }
 
 /**
@@ -294,14 +306,17 @@ async function init() {
     eventSource.on(event_types.USER_MESSAGE_RENDERED, handleMessageRendered);
     
     // Listen for chat changes to re-add buttons
-    eventSource.on(event_types.CHAT_CHANGED, addButtonsToAllMessages);
+    eventSource.on(event_types.CHAT_CHANGED, () => {
+        setTimeout(addButtonsToAllMessages, 200);
+    });
     
     // Add buttons to existing messages when the app is ready
-    eventSource.on(event_types.APP_READY, addButtonsToAllMessages);
+    eventSource.on(event_types.APP_READY, () => {
+        setTimeout(addButtonsToAllMessages, 500);
+    });
     
     // Add settings UI
-    const settingsHTML = createSettingsUI();
-    document.getElementById('extensions_settings').appendChild(settingsHTML);
+    createSettingsUI();
 }
 
 // Initialize the extension

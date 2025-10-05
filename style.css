@@ -1,25 +1,22 @@
 /* Message Link Button Extension Styles */
 
+/* Button styling - uses SillyTavern's menu_button class */
 .message-link-button {
-    padding: 4px 8px;
+    padding: 5px 10px;
     margin: 0 2px;
-    background-color: var(--SmartThemeBodyColor, #2b2b2b);
-    border: 1px solid var(--SmartThemeBorderColor, #555);
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-    color: var(--SmartThemeQuoteColor, #bbb);
+    font-size: 16px;
+    line-height: 1;
+    opacity: 0.7;
+    transition: opacity 0.3s, transform 0.1s;
 }
 
 .message-link-button:hover:not(:disabled) {
-    background-color: var(--SmartThemeBlurTintColor, #3a3a3a);
-    border-color: var(--SmartThemeHighlightColor, #777);
-    transform: scale(1.05);
+    opacity: 1;
+    transform: scale(1.1);
 }
 
 .message-link-button:disabled {
-    opacity: 0.6;
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
@@ -27,79 +24,105 @@
     transform: scale(0.95);
 }
 
+.message-link-button.success {
+    color: #4CAF50;
+    opacity: 1;
+}
+
+.message-link-button.error {
+    color: #f44336;
+    opacity: 1;
+}
+
 /* Link container styling */
 .message-link-container {
-    padding: 8px;
-    margin-top: 8px;
-    background-color: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.2));
-    border-left: 3px solid var(--SmartThemeHighlightColor, #4a9eff);
-    border-radius: 4px;
+    padding: 10px;
+    margin-top: 10px;
+    background-color: var(--black30a);
+    border-left: 3px solid var(--SmartThemeHighlightColor);
+    border-radius: 5px;
 }
 
 .message-generated-link {
-    color: var(--SmartThemeHighlightColor, #4a9eff);
+    color: var(--SmartThemeHighlightColor);
     text-decoration: none;
     font-weight: 500;
     word-break: break-all;
+    display: inline-block;
 }
 
 .message-generated-link:hover {
     text-decoration: underline;
-    color: var(--SmartThemeQuoteColor, #6bb6ff);
+    opacity: 0.8;
 }
 
-/* Settings UI Styles */
+/* Settings UI Styles - follows SillyTavern inline-drawer pattern */
 .message-link-button-settings {
+    margin-bottom: 10px;
+}
+
+.message-link-button-settings .inline-drawer {
+    border: 1px solid var(--SmartThemeBorderColor);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.message-link-button-settings .inline-drawer-header {
+    background-color: var(--black50a);
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.message-link-button-settings .inline-drawer-header:hover {
+    background-color: var(--black70a);
+}
+
+.message-link-button-settings .inline-drawer-icon {
+    transition: transform 0.3s;
+    font-size: 18px;
+}
+
+.message-link-button-settings .inline-drawer-content {
     padding: 15px;
-    border: 1px solid var(--SmartThemeBorderColor, #555);
-    border-radius: 8px;
-    margin-bottom: 20px;
-    background-color: var(--SmartThemeBlurTintColor, rgba(0, 0, 0, 0.1));
-}
-
-.message-link-button-settings h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: var(--SmartThemeQuoteColor, #ddd);
-    border-bottom: 1px solid var(--SmartThemeBorderColor, #555);
-    padding-bottom: 8px;
-}
-
-.message-link-button-settings .settings-row {
-    margin-bottom: 15px;
+    display: none;
 }
 
 .message-link-button-settings label {
     display: block;
+    margin-top: 10px;
     margin-bottom: 5px;
-    color: var(--SmartThemeQuoteColor, #bbb);
-    font-weight: 500;
 }
 
-.message-link-button-settings label input[type="checkbox"] {
-    margin-right: 8px;
+.message-link-button-settings label:first-child {
+    margin-top: 0;
+}
+
+.message-link-button-settings .checkbox_label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.message-link-button-settings input[type="checkbox"] {
+    margin: 0;
 }
 
 .message-link-button-settings input[type="text"],
 .message-link-button-settings select {
     width: 100%;
     padding: 8px;
-    background-color: var(--SmartThemeBodyColor, #2b2b2b);
-    border: 1px solid var(--SmartThemeBorderColor, #555);
-    border-radius: 4px;
-    color: var(--SmartThemeQuoteColor, #ddd);
-    font-size: 14px;
-}
-
-.message-link-button-settings input[type="text"]:focus,
-.message-link-button-settings select:focus {
-    outline: none;
-    border-color: var(--SmartThemeHighlightColor, #4a9eff);
+    margin-top: 3px;
+    margin-bottom: 3px;
+    box-sizing: border-box;
 }
 
 .message-link-button-settings small {
     display: block;
-    margin-top: 4px;
-    color: var(--SmartThemeQuoteColor, #888);
-    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 10px;
 }
