@@ -123,7 +123,8 @@ function addLinkToMessage(messageElement, url, saveToChat = true) {
  */
 async function saveVideoLinkToMessage(messageElement, url) {
     try {
-        const { chat } = SillyTavern.getContext();
+        const context = SillyTavern.getContext();
+        const { chat } = context;
         
         // Get message ID from the element
         const mesId = messageElement.getAttribute('mesid');
@@ -149,9 +150,14 @@ async function saveVideoLinkToMessage(messageElement, url) {
         // Save the video link
         message.extra.video_link = url;
         
-        // Save the chat
-        const { saveChatDebounced } = SillyTavern.getContext();
-        await saveChatDebounced();
+        // Save the chat - use the correct function name
+        if (typeof context.saveChat === 'function') {
+            await context.saveChat();
+        } else if (typeof context.saveChatConditional === 'function') {
+            await context.saveChatConditional();
+        } else {
+            console.warn('[Video Link] No save function available, link may not persist');
+        }
         
         console.log('[Video Link] Saved link to message:', messageIndex, url);
     } catch (error) {
@@ -163,33 +169,52 @@ async function saveVideoLinkToMessage(messageElement, url) {
  * Load saved video links for all messages
  */
 function loadSavedVideoLinks() {
-    const { chat } = SillyTavern.getContext();
-    
-    if (!chat || chat.length === 0) return;
-    
-    console.log('[Video Link] Loading saved video links...');
-    
-    // Iterate through all messages in the chat
-    chat.forEach((message, index) => {
-        // Check if message has a saved video link
-        if (message.extra && message.extra.video_link) {
-            // Find the corresponding message element in the DOM
-            const messageElement = document.querySelector(`#chat .mes[mesid="${index}"]`);
-            
-            if (messageElement) {
-                // Add the link without saving (it's already saved)
-                addLinkToMessage(messageElement, message.extra.video_link, false);
+    try {
+        const { chat } = SillyTavern.getContext();
+        
+        if (!chat || chat.length === 0) {
+            console.log('[Video Link] No chat loaded yet');
+            return;
+        }
+        
+        console.log('[Video Link] Loading saved video links for', chat.length, 'messages');
+        
+        let loadedCount = 0;
+        
+        // Iterate through all messages in the chat
+        chat.forEach((message, index) => {
+            // Check if message has a saved video link
+            if (message.extra && message.extra.video_link) {
+                console.log('[Video Link] Found saved link for message', index, ':', message.extra.video_link);
                 
-                // Hide the button since link already exists
-                const button = messageElement.querySelector('.video-link-button');
-                if (button) {
-                    button.style.display = 'none';
+                // Find the corresponding message element in the DOM
+                const messageElement = document.querySelector(`#chat .mes[mesid="${index}"]`);
+                
+                if (messageElement) {
+                    console.log('[Video Link] Found DOM element for message', index);
+                    
+                    // Check if link is already displayed
+                    if (!messageElement.querySelector('.message-link-container')) {
+                        // Add the link without saving (it's already saved)
+                        addLinkToMessage(messageElement, message.extra.video_link, false);
+                        loadedCount++;
+                        
+                        // Hide the button since link already exists
+                        const button = messageElement.querySelector('.video-link-button');
+                        if (button) {
+                            button.style.display = 'none';
+                        }
+                    }
+                } else {
+                    console.log('[Video Link] DOM element not found for message', index);
                 }
             }
-        }
-    });
-    
-    console.log('[Video Link] Finished loading saved video links');
+        });
+        
+        console.log('[Video Link] Loaded', loadedCount, 'saved video links');
+    } catch (error) {
+        console.error('[Video Link] Error loading saved video links:', error);
+    }
 }
 
 /**
@@ -329,6 +354,9 @@ function handleMessageRendered(event) {
     
     // Small delay to ensure message is fully rendered
     setTimeout(() => {
+        // Load any saved links first
+        loadSavedVideoLinks();
+        // Then add buttons to messages that don't have links
         const messages = document.querySelectorAll('#chat .mes');
         messages.forEach(addButtonToMessage);
     }, 100);
@@ -444,18 +472,20 @@ async function init() {
     
     // Listen for chat changes to re-add buttons and load saved links
     eventSource.on(event_types.CHAT_CHANGED, () => {
+        console.log('[Video Link] Chat changed, loading saved links...');
         setTimeout(() => {
             loadSavedVideoLinks();
             addButtonsToAllMessages();
-        }, 200);
+        }, 300);
     });
     
     // Add buttons to existing messages when the app is ready
     eventSource.on(event_types.APP_READY, () => {
+        console.log('[Video Link] App ready, loading saved links...');
         setTimeout(() => {
             loadSavedVideoLinks();
             addButtonsToAllMessages();
-        }, 500);
+        }, 800);
     });
     
     // Add settings UI
