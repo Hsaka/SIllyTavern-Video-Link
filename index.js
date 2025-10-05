@@ -225,36 +225,38 @@ async function handleButtonClick(event) {
     const originalText = button.textContent;
     button.textContent = '⏳';
     
-    try {
-        // Fetch URL from API
-        const url = await fetchLinkFromAPI(messageText);
+    // try {
+    //     // Fetch URL from API
+    //     const url = await fetchLinkFromAPI(messageText);
         
-        // Add link to message
-        addLinkToMessage(messageElement, url);
+    //     // Add link to message
+    //     addLinkToMessage(messageElement, url);
         
-        // Update button to show success
-        button.textContent = '✓';
-        button.classList.add('success');
+    //     // Update button to show success
+    //     button.textContent = '✓';
+    //     button.classList.add('success');
         
-        // Optional: hide button after success
-        setTimeout(() => {
-            button.style.display = 'none';
-        }, 1000);
+    //     // Optional: hide button after success
+    //     setTimeout(() => {
+    //         button.style.display = 'none';
+    //     }, 1000);
         
-    } catch (error) {
-        // Show error state
-        button.textContent = '✗';
-        button.classList.add('error');
-        button.disabled = false;
+    // } catch (error) {
+    //     // Show error state
+    //     button.textContent = '✗';
+    //     button.classList.add('error');
+    //     button.disabled = false;
         
-        // Reset button after delay
-        setTimeout(() => {
-            button.textContent = originalText;
-            button.classList.remove('error');
-        }, 2000);
+    //     // Reset button after delay
+    //     setTimeout(() => {
+    //         button.textContent = originalText;
+    //         button.classList.remove('error');
+    //     }, 2000);
         
-        console.error('[Video Link] Failed to fetch link:', error);
-    }
+    //     console.error('[Video Link] Failed to fetch link:', error);
+    // }
+
+    addLinkToMessage(messageElement, "https://gamepyong.xyz");
 }
 
 /**
