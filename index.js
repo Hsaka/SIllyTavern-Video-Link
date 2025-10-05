@@ -83,11 +83,18 @@ async function fetchLinkFromAPI(messageText) {
  * Add a clickable link to the message
  * @param {HTMLElement} messageElement - The message container element
  * @param {string} url - The URL to add
+ * @param {boolean} saveToChat - Whether to save the link to chat metadata
  */
-function addLinkToMessage(messageElement, url) {
+function addLinkToMessage(messageElement, url, saveToChat = true) {
     // Find the message text container
     const mesText = messageElement.querySelector('.mes_text');
     if (!mesText) return;
+    
+    // Check if link already exists
+    if (messageElement.querySelector('.message-link-container')) {
+        console.log('[Video Link] Link already exists for this message');
+        return;
+    }
     
     // Create link element
     const linkContainer = document.createElement('div');
@@ -102,6 +109,87 @@ function addLinkToMessage(messageElement, url) {
     
     linkContainer.appendChild(link);
     mesText.appendChild(linkContainer);
+    
+    // Save to chat metadata if requested
+    if (saveToChat) {
+        saveVideoLinkToMessage(messageElement, url);
+    }
+}
+
+/**
+ * Save video link to message metadata
+ * @param {HTMLElement} messageElement - The message container element
+ * @param {string} url - The URL to save
+ */
+async function saveVideoLinkToMessage(messageElement, url) {
+    try {
+        const { chat } = SillyTavern.getContext();
+        
+        // Get message ID from the element
+        const mesId = messageElement.getAttribute('mesid');
+        if (mesId === null || mesId === undefined) {
+            console.error('[Video Link] No message ID found');
+            return;
+        }
+        
+        const messageIndex = parseInt(mesId);
+        if (isNaN(messageIndex) || messageIndex < 0 || messageIndex >= chat.length) {
+            console.error('[Video Link] Invalid message index:', messageIndex);
+            return;
+        }
+        
+        // Get the message object
+        const message = chat[messageIndex];
+        
+        // Initialize extra field if it doesn't exist
+        if (!message.extra) {
+            message.extra = {};
+        }
+        
+        // Save the video link
+        message.extra.video_link = url;
+        
+        // Save the chat
+        const { saveChatDebounced } = SillyTavern.getContext();
+        await saveChatDebounced();
+        
+        console.log('[Video Link] Saved link to message:', messageIndex, url);
+    } catch (error) {
+        console.error('[Video Link] Failed to save link to message:', error);
+    }
+}
+
+/**
+ * Load saved video links for all messages
+ */
+function loadSavedVideoLinks() {
+    const { chat } = SillyTavern.getContext();
+    
+    if (!chat || chat.length === 0) return;
+    
+    console.log('[Video Link] Loading saved video links...');
+    
+    // Iterate through all messages in the chat
+    chat.forEach((message, index) => {
+        // Check if message has a saved video link
+        if (message.extra && message.extra.video_link) {
+            // Find the corresponding message element in the DOM
+            const messageElement = document.querySelector(`#chat .mes[mesid="${index}"]`);
+            
+            if (messageElement) {
+                // Add the link without saving (it's already saved)
+                addLinkToMessage(messageElement, message.extra.video_link, false);
+                
+                // Hide the button since link already exists
+                const button = messageElement.querySelector('.video-link-button');
+                if (button) {
+                    button.style.display = 'none';
+                }
+            }
+        }
+    });
+    
+    console.log('[Video Link] Finished loading saved video links');
 }
 
 /**
@@ -137,38 +225,36 @@ async function handleButtonClick(event) {
     const originalText = button.textContent;
     button.textContent = '⏳';
     
-    // try {
-    //     // Fetch URL from API
-    //     const url = await fetchLinkFromAPI(messageText);
+    try {
+        // Fetch URL from API
+        const url = await fetchLinkFromAPI(messageText);
         
-    //     // Add link to message
-    //     addLinkToMessage(messageElement, url);
+        // Add link to message
+        addLinkToMessage(messageElement, url);
         
-    //     // Update button to show success
-    //     button.textContent = '✓';
-    //     button.classList.add('success');
+        // Update button to show success
+        button.textContent = '✓';
+        button.classList.add('success');
         
-    //     // Optional: hide button after success
-    //     setTimeout(() => {
-    //         button.style.display = 'none';
-    //     }, 1000);
+        // Optional: hide button after success
+        setTimeout(() => {
+            button.style.display = 'none';
+        }, 1000);
         
-    // } catch (error) {
-    //     // Show error state
-    //     button.textContent = '✗';
-    //     button.classList.add('error');
-    //     button.disabled = false;
+    } catch (error) {
+        // Show error state
+        button.textContent = '✗';
+        button.classList.add('error');
+        button.disabled = false;
         
-    //     // Reset button after delay
-    //     setTimeout(() => {
-    //         button.textContent = originalText;
-    //         button.classList.remove('error');
-    //     }, 2000);
+        // Reset button after delay
+        setTimeout(() => {
+            button.textContent = originalText;
+            button.classList.remove('error');
+        }, 2000);
         
-    //     console.error('[Video Link] Failed to fetch link:', error);
-    // }
-
-    addLinkToMessage(messageElement, "https://gamepyong.xyz");
+        console.error('[Video Link] Failed to fetch link:', error);
+    }
 }
 
 /**
@@ -179,6 +265,22 @@ function addButtonToMessage(messageElement) {
     // Don't add if button already exists
     if (messageElement.querySelector('.video-link-button')) {
         return;
+    }
+    
+    // Check if this message already has a saved video link
+    const mesId = messageElement.getAttribute('mesid');
+    if (mesId !== null) {
+        const { chat } = SillyTavern.getContext();
+        const messageIndex = parseInt(mesId);
+        
+        if (!isNaN(messageIndex) && messageIndex >= 0 && messageIndex < chat.length) {
+            const message = chat[messageIndex];
+            
+            // If link exists, don't show the button
+            if (message.extra && message.extra.video_link) {
+                return;
+            }
+        }
     }
     
     // Create button container that will appear below the message text
@@ -338,14 +440,20 @@ async function init() {
     eventSource.on(event_types.CHARACTER_MESSAGE_RENDERED, handleMessageRendered);
     eventSource.on(event_types.USER_MESSAGE_RENDERED, handleMessageRendered);
     
-    // Listen for chat changes to re-add buttons
+    // Listen for chat changes to re-add buttons and load saved links
     eventSource.on(event_types.CHAT_CHANGED, () => {
-        setTimeout(addButtonsToAllMessages, 200);
+        setTimeout(() => {
+            loadSavedVideoLinks();
+            addButtonsToAllMessages();
+        }, 200);
     });
     
     // Add buttons to existing messages when the app is ready
     eventSource.on(event_types.APP_READY, () => {
-        setTimeout(addButtonsToAllMessages, 500);
+        setTimeout(() => {
+            loadSavedVideoLinks();
+            addButtonsToAllMessages();
+        }, 500);
     });
     
     // Add settings UI
