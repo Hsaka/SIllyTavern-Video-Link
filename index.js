@@ -11,7 +11,7 @@ const defaultSettings = Object.freeze({
     enabled: true,
     apiEndpoint: 'https://api.example.com/get-link',
     buttonText: '🔗',
-    buttonPosition: 'right' // 'left' or 'right'
+    buttonPosition: 'bottom' // 'top' or 'bottom'
 });
 
 // Extension state
@@ -114,44 +114,61 @@ async function handleButtonClick(event) {
     
     if (!messageElement) return;
     
+    // Get message text - extract only the text content, not HTML
+    const mesText = messageElement.querySelector('.mes_text');
+    if (!mesText) {
+        console.error('[Video Link] No message text found');
+        return;
+    }
+    
+    // Get the actual text content, stripping out any HTML
+    let messageText = mesText.innerText || mesText.textContent || '';
+    messageText = messageText.trim();
+    
+    if (!messageText) {
+        console.error('[Video Link] Message text is empty');
+        return;
+    }
+    
+    console.log('[Video Link] Sending message to API:', messageText);
+    
     // Disable button during API call
     button.disabled = true;
+    const originalText = button.textContent;
     button.textContent = '⏳';
     
-    try {
-        // Get message text
-        const mesText = messageElement.querySelector('.mes_text');
-        const messageText = mesText ? mesText.textContent.trim() : '';
+    // try {
+    //     // Fetch URL from API
+    //     const url = await fetchLinkFromAPI(messageText);
         
-        // Fetch URL from API
-        const url = await fetchLinkFromAPI(messageText);
+    //     // Add link to message
+    //     addLinkToMessage(messageElement, url);
         
-        // Add link to message
-        addLinkToMessage(messageElement, url);
+    //     // Update button to show success
+    //     button.textContent = '✓';
+    //     button.classList.add('success');
         
-        // Update button to show success
-        button.textContent = '✓';
-        button.classList.add('success');
+    //     // Optional: hide button after success
+    //     setTimeout(() => {
+    //         button.style.display = 'none';
+    //     }, 1000);
         
-        // Optional: hide button after success
-        setTimeout(() => {
-            button.style.display = 'none';
-        }, 1000);
+    // } catch (error) {
+    //     // Show error state
+    //     button.textContent = '✗';
+    //     button.classList.add('error');
+    //     button.disabled = false;
         
-    } catch (error) {
-        // Show error state
-        button.textContent = '✗';
-        button.classList.add('error');
-        button.disabled = false;
+    //     // Reset button after delay
+    //     setTimeout(() => {
+    //         button.textContent = originalText;
+    //         button.classList.remove('error');
+    //     }, 2000);
         
-        // Reset button after delay
-        setTimeout(() => {
-            button.textContent = settings.buttonText;
-            button.classList.remove('error');
-        }, 2000);
-        
-        console.error('[Video Link] Failed to fetch link:', error);
-    }
+    //     console.error('[Video Link] Failed to fetch link:', error);
+    // }
+
+    addLinkToMessage(messageElement, "https://gamepyong.xyz");
 }
 
 /**
@@ -177,12 +194,16 @@ function addButtonToMessage(messageElement) {
     
     buttonContainer.appendChild(button);
     
-    // Find the message text container and add button below it
+    // Find the message text container and add button relative to it
     const mesText = messageElement.querySelector('.mes_text');
     
     if (mesText) {
-        // Insert after the message text
-        mesText.parentNode.insertBefore(buttonContainer, mesText.nextSibling);
+        // Insert before or after the message text based on settings
+        if (settings.buttonPosition === 'top') {
+            mesText.parentNode.insertBefore(buttonContainer, mesText);
+        } else {
+            mesText.parentNode.insertBefore(buttonContainer, mesText.nextSibling);
+        }
     }
 }
 
@@ -242,8 +263,8 @@ function createSettingsUI() {
                         <small>Button Position</small>
                     </label>
                     <select id="vl_button_position" class="text_pole">
-                        <option value="left" ${settings.buttonPosition === 'left' ? 'selected' : ''}>Left</option>
-                        <option value="right" ${settings.buttonPosition === 'right' ? 'selected' : ''}>Right</option>
+                        <option value="top" ${settings.buttonPosition === 'top' ? 'selected' : ''}>Above message</option>
+                        <option value="bottom" ${settings.buttonPosition === 'bottom' ? 'selected' : ''}>Below message</option>
                     </select>
                 </div>
             </div>
