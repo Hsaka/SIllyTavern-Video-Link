@@ -59,7 +59,7 @@ async function fetchLinkFromAPI(messageText) {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                message: messageText,
+                prompt: messageText,
                 timestamp: Date.now()
             })
         });
