@@ -254,7 +254,7 @@ async function handleButtonClick(event) {
         // Fetch URL from API
         const filename = await fetchLinkFromAPI(messageText);
         
-        const url = `${apiEndpoint}/v1/player?id=${filename}`;
+        const url = `${settings.apiEndpoint}/v1/player?id=${filename}`;
 
         // Add link to message
         addLinkToMessage(messageElement, url);
