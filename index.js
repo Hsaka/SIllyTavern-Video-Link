@@ -160,15 +160,15 @@ async function handleButtonClick(event) {
  */
 function addButtonToMessage(messageElement) {
     // Don't add if button already exists
-    if (messageElement.querySelector('.message-link-button')) {
+    if (messageElement.querySelector('.video-link-button')) {
         return;
     }
     
     // Create button
     const button = document.createElement('button');
-    button.className = 'message-link-button menu_button';
+    button.className = 'video-link-button menu_button';
     button.textContent = settings.buttonText;
-    button.title = 'Get Link';
+    button.title = 'Get Video Link';
     button.addEventListener('click', handleButtonClick);
     
     // Find the message buttons container
@@ -250,8 +250,11 @@ function createSettingsUI() {
     
     $('#extensions_settings2').append(settingsHtml);
     
-    // Make the drawer collapsible - use event delegation or direct binding after DOM is ready
-    $(document).on('click', '.video-link-settings .inline-drawer-toggle', function() {
+    // Make the drawer collapsible - bind directly after DOM insertion and prevent event bubbling
+    $('.video-link-settings .inline-drawer-toggle').off('click').on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
         const drawer = $(this).closest('.inline-drawer');
         const icon = drawer.find('.inline-drawer-icon');
         const content = drawer.find('.inline-drawer-content');
