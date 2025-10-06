@@ -212,6 +212,28 @@ function loadSavedVideoLinks() {
 }
 
 /**
+ * Hide all video links in the DOM
+ */
+function hideAllVideoLinks() {
+    const links = document.querySelectorAll('.message-link-container');
+    links.forEach(link => {
+        link.style.display = 'none';
+    });
+    console.log('[Video Link] Hidden', links.length, 'video links');
+}
+
+/**
+ * Show all video links in the DOM
+ */
+function showAllVideoLinks() {
+    const links = document.querySelectorAll('.message-link-container');
+    links.forEach(link => {
+        link.style.display = '';
+    });
+    console.log('[Video Link] Showed', links.length, 'video links');
+}
+
+/**
  * Handle button click
  * @param {Event} event - Click event
  */
@@ -424,9 +446,11 @@ function createSettingsUI() {
         saveSettings();
         if (settings.enabled) {
             addButtonsToAllMessages();
+            showAllVideoLinks();
         } else {
-            // Remove all buttons when disabled
-            $('.video-link-button').remove();
+            // Remove all buttons and hide all links when disabled
+            $('.video-link-button-container').remove();
+            hideAllVideoLinks();
         }
     });
     
@@ -469,6 +493,10 @@ async function init() {
         setTimeout(() => {
             loadSavedVideoLinks();
             addButtonsToAllMessages();
+            // Apply visibility based on enabled state
+            if (!settings.enabled) {
+                hideAllVideoLinks();
+            }
         }, 300);
     });
     
@@ -478,6 +506,10 @@ async function init() {
         setTimeout(() => {
             loadSavedVideoLinks();
             addButtonsToAllMessages();
+            // Apply visibility based on enabled state
+            if (!settings.enabled) {
+                hideAllVideoLinks();
+            }
         }, 800);
     });
     
